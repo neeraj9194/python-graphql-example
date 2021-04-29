@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    environment:
+      AWS_ACCESS_KEY_ID: "fakeMyKeyId"
+      AWS_SECRET_ACCESS_KEY: "fakeSecretAccessKey"
+      REGION: 'eu-west-1'
+    depends_on:
+        - "db"
+    links:
+        - "db"
+    volumes:
+      - .:/app
+  db:
+    image: "amazon/dynamodb-local:latest"
+    command: "-jar DynamoDBLocal.jar -sharedDb -optimizeDbBeforeStartup -dbPath ./data"
+    container_name: dynamodb-local
+    ports:
+        - "8080:8000"
+    volumes:
+        - "./dynamodblocal:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
